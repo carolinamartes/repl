@@ -1,0 +1,36 @@
+<!--adapted from http://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Repl</title>
+  </head>
+  <body>
+    <h1>Repl</h1>
+    <textarea id='code'></textarea>
+    <button id='safe'>Run</button>
+    <iframe sandbox='allow-scripts'
+            id='sandboxed'
+            src='/iframe'></iframe>
+
+    <script>
+      var sandboxedFrame = document.getElementById('sandboxed');
+
+      function evaluate(frame) {
+        var code = document.getElementById('code').value;
+        frame.contentWindow.postMessage(code, '*');
+      }
+
+      document.getElementById('safe').addEventListener('click', function () {
+        evaluate(sandboxedFrame);
+      });
+      // Listen for response messages from the frames.
+      window.addEventListener('message', function (e) {
+        if (e.origin === "null" && e.source === sandboxedFrame.contentWindow)
+           {
+          alert('Result: ' + e.data);
+        }
+      });
+    </script>
+  </body>
+</html>
