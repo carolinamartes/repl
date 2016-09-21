@@ -1,53 +1,56 @@
-<!--modified from http://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/ -->
+<!--iframe modified from http://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/ -->
 <!-- Some security measures:
 -the iframe sandbox isolates user input.
 -the iframe sandbox constrains the scripts that are allowed to run within in. -->
-  <head>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+<head>
     <link rel="stylesheet" type="text/css" href="jquery-linedtextarea/jquery-linedtextarea.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <title>Repl</title>
-  </head>
-  <body>
+</head>
+<body>
     <div id="main-container">
-    <div id="input-container">
-    <h1>Repl</h1>
-    <textarea id='code'></textarea>
-    <button id='run-bttn'>Run</button>
-    <iframe sandbox='allow-scripts'
-            id='sandboxed'
-            src='/iframe'></iframe>
-    </div>
-    <div id="output-container"></div>
+        <div id="input-container">
+            <h1>Repl</h1>
+            <select id="language-select" name="languages">
+              <%for lan in Languages%>
+                <option value= <%=lan[1]%> ><%=lan[0]%></option>
+              <%end%>
+            </select>
+            <textarea id='code'></textarea>
+            <button id='run-bttn'>Run</button>
+            <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
+        </div>
+        <div id="output-container"></div>
     </div>
     <script>
+        var sandboxedFrame = document.getElementById('sandboxed');
 
-      var sandboxedFrame = document.getElementById('sandboxed');
-
-      function evaluate(frame) {
-        var code = $('#code').val();
-        frame.contentWindow.postMessage(code, '*');
-      }
-
-      $('#run-bttn').on('click', function () {
-        evaluate(sandboxedFrame);
-      });
-      // Listen for response messages from the frames.
-      window.addEventListener('message', function (e) {
-        if (e.origin === "null" && e.source === sandboxedFrame.contentWindow)
-           {
-             $("#output-container").append('<div>').text(e.data)
+        function evaluate(frame, language) {
+          var language= $('#language-select').val()
+          if (language=='javascript/node-0.10.29'){
+            var code = $('#code').val();
+            frame.contentWindow.postMessage(code, '*');
+          }
+          else {
+            $("#output-container").append('<div>').text("Language not supported yet")
+          }
         }
-      });
+
+        $('#run-bttn').on('click', function () {
+            evaluate(sandboxedFrame);
+        });
+        // Listen for response messages from the frames.
+        window.addEventListener('message', function (e) {
+            if (e.origin === "null" && e.source === sandboxedFrame.contentWindow) {
+                $("#output-container").append('<div>').text(e.data)
+            }
+        });
     </script>
     <script src="jquery-linedtextarea/jquery-linedtextarea.js" type="text/javascript"></script>
     <script>
-    $(function() {
-
-    // Target all classed with ".lined"
-    $("#code").linedtextarea(
-        {selectedLine: 1}
-      );
-    });
+        $(function () {
+            $("#code").linedtextarea({selectedLine: 1});
+        });
     </script>
-    </body>
+</body>

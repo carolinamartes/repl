@@ -6,7 +6,9 @@
   margin: 0 auto;
   padding: 1em;
   overflow: hidden;
+  font-family: monospace;
 }
+
 html {
   margin: 0;
   padding: 0;
