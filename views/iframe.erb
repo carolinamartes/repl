@@ -4,13 +4,14 @@
   <head>
     <title>Repl</title>
     <script>
+
         console.oldLog = console.log;
         console.log = function(value)
         {
-            console.oldLog(value);
-            //log all lines in response
-            window.$log = value;
+           window.$log=value.toString();
         };
+
+
       window.addEventListener('message', function (e) {
         if (e.origin !== (window.location.protocol + "//" + window.location.host))
           return;
@@ -24,9 +25,8 @@
             result="Console: " + $log
           }
         } catch (e) {
-          // differentiate errors here
-          
-          result = 'Error';
+
+          result = e.name + ': ' + e.message;
         }
         mainWindow.postMessage(result, e.origin);
       });
