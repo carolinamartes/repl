@@ -1,21 +1,35 @@
-<!--adapted from: http://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/ -->
+<!--modified from: http://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/ -->
 <!DOCTYPE html>
 <html>
   <head>
     <title>Repl</title>
     <script>
+        console.oldLog = console.log;
+        console.log = function(value)
+        {
+            console.oldLog(value);
+            //log all lines in response
+            window.$log = value;
+        };
       window.addEventListener('message', function (e) {
         if (e.origin !== (window.location.protocol + "//" + window.location.host))
           return;
         var mainWindow = e.source;
         var result = '';
         try {
-          result = eval(e.data);
+          if (eval(e.data)!=null){
+            result="Output: " + eval(e.data)
+          }
+          else if(eval(e.data)==null && $log!=null){
+            result="Console: " + $log
+          }
         } catch (e) {
-          result = 'Error.';
+          result = 'Error';
         }
         mainWindow.postMessage(result, e.origin);
       });
     </script>
   </head>
+  <body>
+  </body>
 </html>
