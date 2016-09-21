@@ -24,6 +24,8 @@
             result="Console: " + $log
           }
         } catch (e) {
+          // differentiate errors here
+          
           result = 'Error';
         }
         mainWindow.postMessage(result, e.origin);
