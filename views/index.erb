@@ -12,16 +12,26 @@
     <div id="main-container">
         <div id="input-container">
             <h1>Repl</h1>
+            <form action="/" method="POST">
             <select id="language-select" name="languages">
               <%for lan in Languages%>
                 <option value= <%=lan[1]%> ><%=lan[0]%></option>
               <%end%>
             </select>
-            <textarea id='code'></textarea>
+            <textarea id='code' name="code">
+              <% if defined? @code %>
+                <%=@code%>
+              <%end%>
+            </textarea>
             <button id='run-bttn'>Run</button>
+          </form>
             <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
         </div>
-        <div id="output-container"></div>
+        <div id="output-container">
+          <% if defined? @result %>
+            Output: <%=@result%>
+          <%end%>
+        </div>
     </div>
     <script>
         var sandboxedFrame = document.getElementById('sandboxed');
@@ -32,13 +42,14 @@
             var code = $('#code').val();
             frame.contentWindow.postMessage(code, '*');
           }
-          else {
-            $("#output-container").append('<div>').text("Language not supported yet")
-          }
         }
 
-        $('#run-bttn').on('click', function () {
+        $('#run-bttn').on('click', function (event) {
+          var language= $('#language-select').val()
+          if (language=='javascript/node-0.10.29'){
             evaluate(sandboxedFrame);
+            event.preventDefault()
+          }
         });
         // Listen for response messages from the frames.
         window.addEventListener('message', function (e) {

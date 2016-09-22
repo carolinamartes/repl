@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'sinatra'
+require 'eval_in'
+require 'pry'
 
 set :protection, :except => :frame_options
 
@@ -23,7 +25,21 @@ Languages = [
 ]
 
 get '/' do
+    @result
+    @language
+    @code
     erb :index
+end
+
+
+post '/' do
+  @language = params[:languages]
+  @code= params[:code]
+  unless @language =='javascript/node-0.10.29'
+    result = EvalIn.call(eval("#{@code}"), language: "#{@language}")
+    @result=result.code
+  end
+  erb :index
 end
 
 get '/iframe' do
