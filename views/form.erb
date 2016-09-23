@@ -1,0 +1,26 @@
+
+<form action="/" method="POST">
+Language:
+<select id="language-select" name="languages">
+  <%for lan in Languages%>
+    <option value=<%=lan[1]%>><%=lan[0]%></option>
+  <%end%>
+</select>
+Data type:
+<select id="data-type" name="data-type">
+  <option value="array">Array</option>
+  <option value="integer">Integer</option>
+  <option value="string">String</option>
+</select>
+<textarea id='code' name="code">
+
+  <% if defined? @code %>
+    <%=@code%>
+  <%end%>
+
+</textarea>
+</div>
+<button id='run-bttn'>Run</button>
+</form>
+<script>
+</script>
