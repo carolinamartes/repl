@@ -14,69 +14,72 @@
         <div id="input-container">
             <h1>Repl</h1>
             <br>
-            <form action="/" method="POST">
             Language:
-            <select id="language-select" name="languages">
-              <%for lan in Languages%>
-                <option value=<%=lan[1]%>><%=lan[0]%></option>
-              <%end%>
+            <select id="language-select" name="languages" onsubmit="return false;">
+                <%for lan in Languages%>
+                  <option value=<%=lan[1]%>><%=lan[0]%></option>
+                <%end%>
             </select>
             Data type:
             <select id="data-type" name="data-type">
-              <option value="array">Array</option>
-              <option value="integer">Integer</option>
-              <option value="string">String</option>
+                <option value="array">Array</option>
+                <option value="integer">Integer</option>
+                <option value="string">String</option>
             </select>
             <textarea id='code' name="code">
-              <% if defined? @code %>
-                <%=@code%>
-              <%end%>
+                <% if defined? @code %>
+                  <%=@code%>
+                <%end%>
             </textarea>
             <button id='run-bttn'>Run</button>
-            </form>
-
-          <button id="example-code">Hello World!</button>
+            <button id="example-code">Hello World!</button>
             <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
         </div>
         <div id="output-container">
-          <% if defined? @result %>
-            Output: <%=@result%>
-          <%end%>
+            <% if defined? @result %>
+              Output:
+              <%=@result%>
+            <%end%>
         </div>
     </div>
     <script>
-  
+        $('#run-bttn').on('click', function (event) {
+            var url = "/";
+            var language = $('#language-select').val()
+            var code = $('#code').val();
+            if (language != 'javascript/node-0.10.29') {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        languages: language,
+                        code: code
+                    },
+                    success: function (data) {
+                        $('#output-container').text("Output: " + data[0]);
+                        code = data[1];
+                        $("select option").each(function () {
+                            if ($(this).val() == data[2]) {
+                                $(this).attr("selected", "selected");
+                            }
+                        });
+                    }
+                })
+                return false
+            } else {
+                evaluate(sandboxedFrame);
+            }
+        })
         var sandboxedFrame = document.getElementById('sandboxed');
 
         function evaluate(frame, language) {
-
-          var language= $('#language-select').val()
-          // if (language=='javascript/node-0.10.29'){
             var code = $('#code').val();
-            var codeAndLan= {
-              code: code,
-              language:language
-            }
-            frame.contentWindow.postMessage(codeAndLan, '*');
-          // }
+            frame.contentWindow.postMessage(code, '*');
         }
-        $('#run-bttn').on('click', function (event) {
-          var language= $('#language-select').val()
-          if (language=='javascript/node-0.10.29'){
-            evaluate(sandboxedFrame);
-            event.preventDefault()
-          }
-        });
-        // Listen for response messages from the frames.
         window.addEventListener('message', function (e) {
             if (e.origin === "null" && e.source === sandboxedFrame.contentWindow) {
                 $("#output-container").append('<div>').text(e.data)
             }
-        });
-        $("select option").each(function(){
-          if ($(this).val()==`<%=@language%>`){
-          $(this).attr("selected","selected");
-        }
         });
     </script>
     <script src="jquery-linedtextarea/jquery-linedtextarea.js" type="text/javascript"></script>

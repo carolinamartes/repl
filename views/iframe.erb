@@ -14,18 +14,15 @@
                 var mainWindow = e.source;
                 var result = '';
                 try {
-                    if (eval(e.data.code) != null && e.data.language=="javascript/node-0.10.29") {
-                        result = "Output: " + (eval(e.data.code))
-                    } else if (eval(e.data.code) == null && $log != null && e.data.language=="javascript/node-0.10.29") {
+                    if (eval(e.data) != null) {
+                        result = "Output: " + (eval(e.data))
+                    } else if (eval(e.data) == null && $log != null) {
                         result = "Console: " + $log
                     }
-                    // else if (eval(e.data.code) != null && e.data.language!="javascript/node-0.10.29") {
-                    //
-                    // }
-                } catch (e) {
+                    } catch (e) {
 
-                    result = e.name + ': ' + e.message;
-                }
+                        result = e.name + ': ' + e.message;
+                    }
                 mainWindow.postMessage(result, e.origin);
             });
         </script>

@@ -43,14 +43,15 @@ end
 
 
 post '/' do
+
   @language = params[:languages]
   @code= params[:code]
   @code=@code.strip
   unless @language =='javascript/node-0.10.29'
     result = EvalIn.call @code, language: "#{@language}"
-    @result=result.output
+    @result= [result.output, @code, @language]
   end
-  erb :index
+  # erb :index
 
 end
 
