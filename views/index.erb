@@ -17,7 +17,7 @@
             Language:
             <select id="language-select" name="languages" onsubmit="return false;">
                 <%for lan in Languages%>
-                  <option value=<%=lan[1]%>><%=lan[0]%></option>
+                <option value=<%=lan[1]%>><%=lan[0]%></option>
                 <%end%>
             </select>
             Data type:
@@ -28,7 +28,7 @@
             </select>
             <textarea id='code' name="code">
                 <% if defined? @code %>
-                  <%=@code%>
+                <%=@code%>
                 <%end%>
             </textarea>
             <button id='run-bttn'>Run</button>
@@ -37,36 +37,45 @@
         </div>
         <div id="output-container">
             <% if defined? @result %>
-              Output:
-              <%=@result%>
+            Output:
+            <%=@result%>
             <%end%>
         </div>
     </div>
     <script>
-        $('#run-bttn').on('click', function (event) {
-            var url = "/";
+
+        $("#example-code").on('click', function (event) {
             var language = $('#language-select').val()
+            $.ajax({
+                type: "POST",
+                url: "/",
+                data: {
+                    languages: language,
+                    example: true
+                },
+                success: function (data) {
+                    $('#code').val(data)
+                }
+            })
+        })
+
+        $("#run-bttn").on('click', function (event) {
+            var language = $('#language-select').val();
             var code = $('#code').val();
             if (language != 'javascript/node-0.10.29') {
                 $.ajax({
                     type: "POST",
-                    url: url,
+                    url: "/",
                     data: {
                         languages: language,
-                        code: code
+                        code: code,
+                        example: false
                     },
                     success: function (data) {
-                        $('#output-container').text("Output: " + data[0]);
-                        code = data[1];
-                        $("select option").each(function () {
-                            if ($(this).val() == data[2]) {
-                                $(this).attr("selected", "selected");
-                            }
-                        });
+                        $('#output-container').text("Output: " + data);
                     }
                 })
-                return false
-            } else {
+            } else if (language == 'javascript/node-0.10.29') {
                 evaluate(sandboxedFrame);
             }
         })

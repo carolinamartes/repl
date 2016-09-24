@@ -45,12 +45,23 @@ end
 post '/' do
 
   @language = params[:languages]
-  @code= params[:code]
-  @code=@code.strip
-  unless @language =='javascript/node-0.10.29'
+  @example=params[:example]
+
+  if @language !='javascript/node-0.10.29' && @example!="true"
+    @code= params[:code]
     result = EvalIn.call @code, language: "#{@language}"
-    @result= [result.output, @code, @language]
+    return @result= [result.output]
   end
+
+    if @example=="true"
+      for lan in Languages
+        if @language==lan[1]
+          hello_world=lan[2]
+        end
+      end
+    return @result= [hello_world]
+    end
+
   # erb :index
 
 end
