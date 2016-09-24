@@ -2,7 +2,6 @@ require 'rubygems'
 require 'bundler'
 require 'eval_in'
 require 'pry'
-require 'gon'
 require 'sinatra'
 
 

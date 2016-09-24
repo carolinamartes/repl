@@ -20,8 +20,8 @@
                 <option value=<%=lan[1]%>><%=lan[0]%></option>
                 <%end%>
             </select>
-            Data type:
             <select id="data-type" name="data-type">
+                <option selected disabled>Input Data Type</option>
                 <option value="array">Array</option>
                 <option value="integer">Integer</option>
                 <option value="string">String</option>
@@ -32,6 +32,8 @@
                 <%end%>
             </textarea>
             <button id='run-bttn'>Run</button>
+            <button id='code-stats'>Code Stats</button>
+            <button id='complexity'>Time Complexity</button>
             <button id="example-code">Hello World!</button>
             <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
         </div>
@@ -43,6 +45,28 @@
         </div>
     </div>
     <script>
+
+        // language variables
+
+        $('#code-stats').hide()
+        $("#language-select").on('change', function (event) {
+          var language = $('#language-select').val()
+          if (language =='ruby/mri-2.1'){
+            $('#code-stats').show()
+
+          }
+          else if (language =='javascript/node-0.10.29'){
+            $('#complexity').show()
+            $('#data-type').show()
+          }
+          else{
+          $('#complexity').hide()
+          $('#data-type').hide()
+          $('#code').val("");
+        }
+        })
+
+        // hello_world ajax call
 
         $("#example-code").on('click', function (event) {
             var language = $('#language-select').val()
@@ -58,6 +82,8 @@
                 }
             })
         })
+
+        // run ajax call
 
         $("#run-bttn").on('click', function (event) {
             var language = $('#language-select').val();
@@ -79,8 +105,9 @@
                 evaluate(sandboxedFrame);
             }
         })
-        var sandboxedFrame = document.getElementById('sandboxed');
 
+        //sandboxing
+        var sandboxedFrame = document.getElementById('sandboxed');
         function evaluate(frame, language) {
             var code = $('#code').val();
             frame.contentWindow.postMessage(code, '*');
@@ -93,6 +120,7 @@
     </script>
     <script src="jquery-linedtextarea/jquery-linedtextarea.js" type="text/javascript"></script>
     <script>
+        //lines in textarea
         $(function () {
             $("#code").linedtextarea({selectedLine: 1});
         });
