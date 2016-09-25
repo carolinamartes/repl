@@ -1,8 +1,11 @@
+require 'sinatra'
+require 'dotenv'
+Dotenv.load
 require 'rubygems'
 require 'bundler'
 require 'eval_in'
 require 'pry'
-require 'sinatra'
+
 
 
 set :protection, :except => :frame_options

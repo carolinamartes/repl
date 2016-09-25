@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+gem 'dotenv'
 gem 'rspec'
 gem 'bundler'
 gem 'eval_in'

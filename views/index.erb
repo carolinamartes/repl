@@ -26,15 +26,23 @@
                 <option value="integer">Integer</option>
                 <option value="string">String</option>
             </select>
+            <select id="data-in-array" name="data-in-array">
+                <option selected disabled>Data in Array</option>
+                <option value="integer">Integer</option>
+                <option value="string">String</option>
+            </select>
+            <input id="function-call" placeholder="Function Call"></input>
             <textarea id='code' name="code">
                 <% if defined? @code %>
                 <%=@code%>
                 <%end%>
             </textarea>
             <button id='run-bttn'>Run</button>
+            <button id='help'>Help!</button>
             <button id='code-stats'>Code Stats</button>
             <button id='complexity'>Time Complexity</button>
             <button id="example-code">Hello World!</button>
+
             <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
         </div>
         <div id="output-container">
@@ -43,12 +51,15 @@
             <%=@result%>
             <%end%>
         </div>
+        <div id="article_recs">
+        </div>
     </div>
     <script>
 
         // language variables
 
         $('#code-stats').hide()
+        $('#data-in-array').hide()
         $("#language-select").on('change', function (event) {
           var language = $('#language-select').val()
           if (language =='ruby/mri-2.1'){
@@ -60,10 +71,21 @@
             $('#data-type').show()
           }
           else{
-          $('#complexity').hide()
-          $('#data-type').hide()
-          $('#code').val("");
-        }
+            $('#complexity').hide()
+            $('#data-type').hide()
+            //reset
+            $('#code').val("");
+            $('#output-container').text("");
+          }
+          })
+
+        $("#data-type").on('change', function (event) {
+          if ($("#data-type").val()=="array"){
+            $('#data-in-array').show()
+          }
+          else{
+            $('#data-in-array').hide()
+          }
         })
 
         // hello_world ajax call
@@ -110,6 +132,10 @@
         var sandboxedFrame = document.getElementById('sandboxed');
         function evaluate(frame, language) {
             var code = $('#code').val();
+            var call = $('#function-call').val();
+            if (call){
+              code=code+ "\n" + call
+            }
             frame.contentWindow.postMessage(code, '*');
         }
         window.addEventListener('message', function (e) {
@@ -117,6 +143,36 @@
                 $("#output-container").append('<div>').text(e.data)
             }
         });
+        //time complexity
+        $('#complexity').on('click', function (event) {
+          //get time complexity???
+        })
+
+        //error help
+        $('#help').on('click', function (event) {
+          var output=$("#output-container").text()
+          if(output.includes("Error")){
+              //call stackoverflow api
+            $.ajax({
+                type: "GET",
+                url: "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle="+ output +"&site=stackoverflow&key=<%=ENV['STACK_OVERFLOW_KEY']%>",
+                success: function (data) {
+                    console.log(data);
+                    if (data.items.length>0){
+                      for (var i=0;i<11;i++){
+                        $('#article_recs').append($("<a>").attr("href", data.items[i].link).html(data.items[i].title))
+                        $('#article_recs').append($("<br>"))
+                      }
+
+                    }
+                }
+            })
+          }
+          else{
+            $("#output-container").text("If you receive an error after running your program, click 'help'")
+          }
+        })
+
     </script>
     <script src="jquery-linedtextarea/jquery-linedtextarea.js" type="text/javascript"></script>
     <script>
