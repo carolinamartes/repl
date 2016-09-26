@@ -130,7 +130,7 @@
 
         //sandboxing
         var sandboxedFrame = document.getElementById('sandboxed');
-        function evaluate(frame, language) {
+        function evaluate(frame) {
             var code = $('#code').val();
             var call = $('#function-call').val();
             if (call){
@@ -138,14 +138,59 @@
             }
             frame.contentWindow.postMessage(code, '*');
         }
+        var lengthAndTime={};
+        var iteration=0
         window.addEventListener('message', function (e) {
             if (e.origin === "null" && e.source === sandboxedFrame.contentWindow) {
-                $("#output-container").append('<div>').text(e.data)
+                $("#output-container").append('<div>').text(e.data[0])
+                lengthAndTime.time=e.data[1]
+                lengthAndTime.length=arrayOfArrayLengths[iteration]
+                iteration++
+
+                console.log(lengthAndTime)
             }
         });
         //time complexity
+        var arrayOfArrayLengths=[]
         $('#complexity').on('click', function (event) {
           //get time complexity???
+          var code = $('#code').val();
+          var call = $('#function-call').val();
+
+          var generateArray= function (){
+            array=[]
+            bigArray=[]
+            for (var j=500; j<Math.pow(10,4); j+=500){
+              for (var i =0; i<j;i++){
+                array.push(Math.floor(Math.random()*10))
+              }
+              bigArray.push(array)
+              array=[]
+            }
+            return bigArray
+          }
+          generateArray()
+
+
+          var generateCalls= function(){
+          var bigArrayLength=bigArray.length
+          for (var i=0;i<bigArrayLength;i++){
+
+            var evaluate=function(frame) {
+                var regex=/\[(.*?)\]/
+                call=call.replace(regex, "["+bigArray[i]+"]")
+                arrayOfArrayLengths.push(bigArray[i].length)
+                if (call){
+                  code=code+ "\n" + call
+                }
+                frame.contentWindow.postMessage(code, '*');
+            }
+            evaluate(sandboxedFrame);
+          }
+        }
+            generateCalls()
+
+
         })
 
         //error help
