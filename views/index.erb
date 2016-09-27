@@ -18,7 +18,7 @@
 <body>
     <div>
         <div id="input-container">
-            <h1>Repl</h1>
+            <h1>Repler</h1>
             <br>
             <div id="top-selectors">Language:
             <select id="language-select" name="languages" onsubmit="return false;">
@@ -81,11 +81,28 @@
             })
         })
 
+      $("button").on('click', function (event) {
+
+      if (this.id=="help" || this.id=="complexity" ){
+        $('body').css("overflow", "auto");
+      }
+      if (this.id!="complexity"){
+        $('#tester').hide()
+      }
+      else {
+        $('#tester').show()
+      }
+      if (this.id=="help"){
+        $('#article_recs').show()
+      }
+      else{
+        $('#article_recs').hide()
+      }
+      })
         // run ajax call
 
+
         $("#run-bttn").on('click', function (event) {
-            $('#article_recs').text("")
-            $('#article_recs').css("opacity", "0")
             $("#output-container").show()
             var language = $('#language-select').val();
             var code = editor.getValue();
@@ -204,9 +221,10 @@
 
         //error help
         $('#help').on('click', function (event) {
-          $('#article_recs').css("opacity", "1")
+            $('#article_recs').css("opacity", "1")
             var output = $("#output-container").text()
-            if (output.includes("Error")) {
+
+            if (output.includes("Error") || output.includes("Error")) {
                 //call stackoverflow api
                 $.ajax({
                     type: "GET",
@@ -221,7 +239,7 @@
 
                         }
                         else{
-                            $("#output-container").text("No articles match your error log")
+                            $("#article_recs").text("No articles match your error log")
                         }
                     }
                 })
