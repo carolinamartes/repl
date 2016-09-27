@@ -47,7 +47,7 @@
         <div id="output-container">
         </div>
         <div id="article_recs"></div>
-        <div id="tester" style="width:700px;height:350px;margin:0 auto;"></div>
+        <div id="tester" style="width:700px;height:0px;margin:0 auto;"></div>
     </div>
     <script>
 
@@ -83,21 +83,18 @@
 
       $("button").on('click', function (event) {
 
-      if (this.id=="help" || this.id=="complexity" ){
-        $('body').css("overflow", "auto");
-      }
-      if (this.id!="complexity"){
-        $('#tester').hide()
-      }
-      else {
-        $('#tester').show()
-      }
-      if (this.id=="help"){
-        $('#article_recs').show()
-      }
-      else{
-        $('#article_recs').hide()
-      }
+        if (this.id!="complexity"){
+          $('#tester').hide()
+        }
+        else {
+          $('#tester').show()
+        }
+        if (this.id=="help"){
+          $('#article_recs').show()
+        }
+        else{
+          $('#article_recs').hide()
+        }
       })
         // run ajax call
 

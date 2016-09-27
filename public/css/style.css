@@ -1,9 +1,9 @@
 body{
-  margin: 10vh auto;
+  margin: 5vh auto;
   font-family: monospace;
   font-size:1.1em;
   color: #263238;
-  overflow: hidden;
+  overflow: auto;
 }
 
 #input-container,#output-container, #article_recs {
