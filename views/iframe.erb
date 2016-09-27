@@ -20,13 +20,16 @@
                         var t1 = performance.now();
                         result.push(t1 - t0)
 
-                    } else if (eval(e.data) == null && $log!=null) {
+                    } else if (eval(e.data) == null && $log != null) {
                         result.push("Console: " + $log)
                     }
-                    } catch (e) {
-                        result.push(e.name + ': ' + e.message);
+                } catch (e) {
+                    if (e.message == "$log is not defined") {
+                        e.message = undefined
                     }
-                    console.oldLog(result)
+                    result.push(e.name + ': ' + e.message);
+                }
+                console.oldLog(result)
                 mainWindow.postMessage(result, e.origin);
             });
         </script>

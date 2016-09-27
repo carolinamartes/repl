@@ -6,13 +6,26 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/1.9.6/jquery.pjax.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-c_cpp.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-coffee.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-fortran.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-haskell.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-ruby.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-lua.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-ocaml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-pascal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-perl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-php.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-python.js"></script>
     <script src="/assets/javascript/src/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="/assets/javascript/src/theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
     <script src="/assets/javascript/src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
     <title>Repl</title>
 </head>
 <body>
@@ -21,15 +34,14 @@
             <h1>Repler</h1>
             <br>
             <div id="top-selectors">Language:
-            <select id="language-select" name="languages" onsubmit="return false;">
-                <%for lan in Languages%>
-                <option value=<%=lan[1]%>><%=lan[0]%></option>
-                <%end%>
-            </select>
+                <select id="language-select" name="languages" onsubmit="return false;">
+                    <%for lan in Languages%>
+                    <option value=<%=lan[1]%>><%=lan[0]%></option>
+                    <%end%>
+                </select>
             </div>
             <input id="function-call" placeholder="Function Call"></input>
-            <div id="code">
-            </div>
+            <div id="code"></div>
             <script>
                 var editor = ace.edit("code");
                 editor.setTheme("ace/theme/tomorrow_night");
@@ -37,17 +49,16 @@
                 editor.session.setMode(new JavaScriptMode());
             </script>
             <div id="bottom-btns">
-            <button class= "myButton" id='run-bttn'>Run</button>
-            <button class= "myButton" id='help'>Help!</button>
-            <button class= "myButton" id='complexity'>Time Complexity</button>
-            <button class= "myButton" id="example-code">Hello World!</button>
-          </div>
+                <button class="myButton" id='run-bttn'>Run</button>
+                <button class="myButton" id='help'>Help!</button>
+                <button class="myButton" id='complexity'>Time Complexity</button>
+                <button class="myButton" id="example-code">Hello World!</button>
+            </div>
             <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
         </div>
-        <div id="output-container">
-        </div>
+        <div id="output-container"></div>
         <div id="article_recs"></div>
-        <div id="tester" style="width:700px;height:0px;margin:0 auto;"></div>
+        <div id="plot" style="width:700px;height:0px;margin:0 auto;"></div>
     </div>
     <script>
 
@@ -61,6 +72,8 @@
                 $('#complexity').hide()
                 editor.setValue("");
                 $('#output-container').text("");
+
+                //syntax switching    
             }
         })
 
@@ -81,23 +94,20 @@
             })
         })
 
-      $("button").on('click', function (event) {
+        $("button").on('click', function (event) {
 
-        if (this.id!="complexity"){
-          $('#tester').hide()
-        }
-        else {
-          $('#tester').show()
-        }
-        if (this.id=="help"){
-          $('#article_recs').show()
-        }
-        else{
-          $('#article_recs').hide()
-        }
-      })
+            if (this.id != "complexity") {
+                $('#plot').hide()
+            } else {
+                $('#plot').show()
+            }
+            if (this.id == "help") {
+                $('#article_recs').show()
+            } else {
+                $('#article_recs').hide()
+            }
+        })
         // run ajax call
-
 
         $("#run-bttn").on('click', function (event) {
             $("#output-container").show()
@@ -133,8 +143,8 @@
         }
         var lengthAndTime = {};
         var iteration = 0;
-        lengthAndTime.x=[];
-        lengthAndTime.y=[];
+        lengthAndTime.x = [];
+        lengthAndTime.y = [];
 
         //listen for response from iframe
         window.addEventListener('message', function (e) {
@@ -145,35 +155,30 @@
                 iteration++
             }
         });
-        var chart= function (){
-          // TESTER = document.getElementById('tester');
-          console.log(lengthAndTime.x)
-          console.log(lengthAndTime.y)
+        var chart = function () {
+            var trace = {
+                type: 'scatter',
+                mode: 'lines-markers',
+                x: lengthAndTime.x,
+                y: lengthAndTime.y,
+                line: {
+                    width: 1
+                }
+            };
 
+            var layout = {
+                yaxis: {
+                    title: "Run Time (milliseconds)"
+                },
+                xaxis: {
+                    title: "Sample Data Length"
+                }
+            };
+            Plotly.plot(document.getElementById('plot'), [trace], layout, {showLink: false});
 
-          var trace = {
-            type: 'scatter',
-            mode: 'lines-markers',
-            x: lengthAndTime.x,
-            y: lengthAndTime.y,
-            line: {
-              width: 1
-            },
-          };
+        };
 
-          var layout = {
-            yaxis: {title: "Run Time (milliseconds)"},
-            xaxis: {title: "Sample Data Length"}
-          };
-
-          Plotly.plot(document.getElementById('tester'), [trace], layout, {showLink: false});
-
-          };
-
-
-
-
-          //time complexity
+        //time complexity
         var arrayOfArrayLengths = []
         $('#complexity').on('click', function (event) {
             var code = editor.getValue();
@@ -213,29 +218,29 @@
             }
             generateCalls()
             $("#output-container").hide()
-            setTimeout(chart,500)
+            setTimeout(chart, 500)
         })
 
         //error help
         $('#help').on('click', function (event) {
             $('#article_recs').css("opacity", "1")
+            $('#article_recs').text("")
             var output = $("#output-container").text()
 
-            if (output.includes("Error") || output.includes("Error")) {
+            if (output.includes("Error") || output.includes("error")) {
+
                 //call stackoverflow api
                 $.ajax({
                     type: "GET",
                     url: "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=" + output + "&site=stackoverflow&key=<%=ENV['STACK_OVERFLOW_KEY']%>",
                     success: function (data) {
-                        console.log(data);
                         if (data.items.length > 0) {
                             for (var i = 0; i < 11; i++) {
                                 $('#article_recs').append($("<a>").attr("href", data.items[i].link).html(data.items[i].title))
                                 $('#article_recs').append($("<br>"))
                             }
 
-                        }
-                        else{
+                        } else {
                             $("#article_recs").text("No articles match your error log")
                         }
                     }
