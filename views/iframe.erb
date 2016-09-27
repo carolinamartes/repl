@@ -12,21 +12,21 @@
                 if (e.origin !== (window.location.protocol + "//" + window.location.host))
                     return;
                 var mainWindow = e.source;
-                var result = "";
+                var result = [];
                 try {
                     if (eval(e.data) != null) {
                         var t0 = performance.now();
-                        result= ["Output: " + (eval(e.data))]
+                        result.push("Output: " + (eval(e.data)))
                         var t1 = performance.now();
                         result.push(t1 - t0)
 
-                    } else if (eval(e.data) == null && $log != null) {
-                        result = "Console: " + $log
+                    } else if (eval(e.data) == null && $log!=null) {
+                        result.push("Console: " + $log)
                     }
                     } catch (e) {
-
-                        result = e.name + ': ' + e.message;
+                        result.push(e.name + ': ' + e.message);
                     }
+                    console.oldLog(result)
                 mainWindow.postMessage(result, e.origin);
             });
         </script>

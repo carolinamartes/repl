@@ -3,12 +3,16 @@
 -the iframe sandbox isolates user input.
 -the iframe sandbox constrains the scripts that are allowed to run within in. -->
 <head>
-    <link rel="stylesheet" type="text/css" href="jquery-linedtextarea/jquery-linedtextarea.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/1.9.6/jquery.pjax.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.3.0/regression.min.js"></script>
-          <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+    <script src="/assets/javascript/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/assets/javascript/src/theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/assets/javascript/src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     <title>Repl</title>
 </head>
 <body>
@@ -16,42 +20,31 @@
         <div id="input-container">
             <h1>Repl</h1>
             <br>
-            Language:
+            <div id="top-selectors">Language:
             <select id="language-select" name="languages" onsubmit="return false;">
                 <%for lan in Languages%>
                 <option value=<%=lan[1]%>><%=lan[0]%></option>
                 <%end%>
             </select>
-            <!-- <select id="data-type" name="data-type">
-                <option selected disabled>Input Data Type</option>
-                <option value="array">Array</option>
-                <option value="integer">Integer</option>
-                <option value="string">String</option>
-            </select> -->
-            <!-- <select id="data-in-array" name="data-in-array">
-                <option selected disabled>Data in Array</option>
-                <option value="integer">Integer</option>
-                <option value="string">String</option>
-            </select> -->
+            </div>
             <input id="function-call" placeholder="Function Call"></input>
-            <textarea id='code' name="code">
-                <% if defined? @code %>
-                <%=@code%>
-                <%end%>
-            </textarea>
-            <button id='run-bttn'>Run</button>
-            <button id='help'>Help!</button>
-            <!-- <button id='code-stats'>Code Stats</button> -->
-            <button id='complexity'>Time Complexity</button>
-            <button id="example-code">Hello World!</button>
-
+            <div id="code">
+            </div>
+            <script>
+                var editor = ace.edit("code");
+                editor.setTheme("ace/theme/tomorrow_night");
+                var JavaScriptMode = ace.require("ace/mode/javascript").Mode;
+                editor.session.setMode(new JavaScriptMode());
+            </script>
+            <div id="bottom-btns">
+            <button class= "myButton" id='run-bttn'>Run</button>
+            <button class= "myButton" id='help'>Help!</button>
+            <button class= "myButton" id='complexity'>Time Complexity</button>
+            <button class= "myButton" id="example-code">Hello World!</button>
+          </div>
             <iframe sandbox='allow-scripts' id='sandboxed' src='/iframe'></iframe>
         </div>
         <div id="output-container">
-            <% if defined? @result %>
-            Output:
-            <%=@result%>
-            <%end%>
         </div>
         <div id="article_recs"></div>
         <div id="tester" style="width:700px;height:350px;margin:0 auto;"></div>
@@ -60,32 +53,16 @@
 
         // language variables
 
-        // $('#code-stats').hide()
-        // $('#data-in-array').hide()
         $("#language-select").on('change', function (event) {
             var language = $('#language-select').val()
-            if (language == 'ruby/mri-2.1') {
-                $('#code-stats').show()
-
-            } else if (language == 'javascript/node-0.10.29') {
+            if (language == 'javascript/node-0.10.29') {
                 $('#complexity').show()
-                // $('#data-type').show()
             } else {
                 $('#complexity').hide()
-                // $('#data-type').hide()
-                //reset
-                $('#code').val("");
+                editor.setValue("");
                 $('#output-container').text("");
             }
         })
-
-        // $("#data-type").on('change', function (event) {
-        //     if ($("#data-type").val() == "array") {
-        //         $('#data-in-array').show()
-        //     } else {
-        //         $('#data-in-array').hide()
-        //     }
-        // })
 
         // hello_world ajax call
 
@@ -99,7 +76,7 @@
                     example: true
                 },
                 success: function (data) {
-                    $('#code').val(data)
+                    editor.setValue(data)
                 }
             })
         })
@@ -107,9 +84,11 @@
         // run ajax call
 
         $("#run-bttn").on('click', function (event) {
-            $("#output-container").show()  
+            $('#article_recs').text("")
+            $('#article_recs').css("opacity", "0")
+            $("#output-container").show()
             var language = $('#language-select').val();
-            var code = $('#code').val();
+            var code = editor.getValue();
             if (language != 'javascript/node-0.10.29') {
                 $.ajax({
                     type: "POST",
@@ -131,7 +110,7 @@
         //sandboxing
         var sandboxedFrame = document.getElementById('sandboxed');
         function evaluate(frame) {
-            var code = $('#code').val();
+            var code = editor.getValue();
             var call = $('#function-call').val();
             if (call) {
                 code = code + "\n" + call
@@ -156,36 +135,21 @@
           // TESTER = document.getElementById('tester');
           console.log(lengthAndTime.x)
           console.log(lengthAndTime.y)
-          // Plotly.plot( TESTER, [{
-          //   x:lengthAndTime.x,
-          //   y:lengthAndTime.y,
-          //   type: 'scatter',
-          // }], {
-          // margin: { t: 0 } } );
+
 
           var trace = {
-            type: 'scatter',                    // set the chart type
-            mode: 'lines',                      // connect points with lines
+            type: 'scatter',
+            mode: 'lines-markers',
             x: lengthAndTime.x,
             y: lengthAndTime.y,
-            line: {                             // set the width of the line.
+            line: {
               width: 1
             },
-            // error_y: {
-            //   array: rows.map(function(row){    // set the height of the error bars
-            //     return row['10 Min Std Dev'];
-            //   }),
-            //   thickness: 0.5,                   // set the thickness of the error bars
-            //   width: 0
-            // }
           };
 
           var layout = {
-            yaxis: {title: "Run Time (milliseconds)"},       // set the y axis title
+            yaxis: {title: "Run Time (milliseconds)"},
             xaxis: {title: "Sample Data Length"}
-            // margin: {                           // update the left, bottom, right, top margin
-            //   l: 40, b: 10, r: 10, t: 20
-            // }
           };
 
           Plotly.plot(document.getElementById('tester'), [trace], layout, {showLink: false});
@@ -198,7 +162,7 @@
           //time complexity
         var arrayOfArrayLengths = []
         $('#complexity').on('click', function (event) {
-            var code = $('#code').val();
+            var code = editor.getValue();
             var call = $('#function-call').val();
 
             // generate exponentially larger arrays to test
@@ -240,6 +204,7 @@
 
         //error help
         $('#help').on('click', function (event) {
+          $('#article_recs').css("opacity", "1")
             var output = $("#output-container").text()
             if (output.includes("Error")) {
                 //call stackoverflow api
@@ -255,18 +220,14 @@
                             }
 
                         }
+                        else{
+                            $("#output-container").text("No articles match your error log")
+                        }
                     }
                 })
             } else {
-                $("#output-container").text("If you receive an error after running your program, click 'help'")
+                $("#article_recs").text("If you receive an error after running your program, click 'help'")
             }
         })
-    </script>
-    <script src="jquery-linedtextarea/jquery-linedtextarea.js" type="text/javascript"></script>
-    <script>
-        //lines in textarea
-        $(function () {
-            $("#code").linedtextarea({selectedLine: 1});
-        });
     </script>
 </body>

@@ -1,10 +1,12 @@
 body{
   margin: 10vh auto;
   font-family: monospace;
+  font-size:1.1em;
+  color: #263238;
 }
 
 #input-container,#output-container, #article_recs {
-  width: 800px;
+  width: 70vw;
   border: 1px solid #CCC;
   box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
   border-width: 0 1px 1px 1px;
@@ -12,18 +14,41 @@ body{
   padding: 1em;
   overflow: hidden;
   text-align: center;
+
 }
 .linedwrap{
-    margin: 0 auto;
+  margin: 0 auto;
+  background-color:#15211E;
+}
+
+#top-selectors{
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+input{
+  font-size: 0.9em
+}
+#input-container{
+  background-color: #e0f2f1;
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.25);
+  border-width: 0 3px 3px 3px;
 }
 
 #article_recs{
-  text-align: left;
+  text-align: center;
+  opacity: 0;
 }
 
 #article_recs a{
   line-height: 1.3em;
   margin-left: 10px;
+  text-decoration: none;
+  color: #263238;
+}
+#article_recs a:hover{
+  color:gray;
 }
 
 html {
@@ -31,24 +56,65 @@ html {
   padding: 0;
 }
 h1 {
-  font: 2em Helvetica, Arial, Sans-Serif;
-  font-weight: 700;
+  font: 2.5em Helvetica, Arial, Sans-Serif;
+  font-weight: 500;
   text-align: center;
   margin: 0;
+  color: #ba2c15;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
-button, select, input{
+button, select{
     font-size: 0.8em;
 }
 
-button {
-  float: right;
-  margin-right: 2.5vw;
+#bottom-btns{
+    margin-right: 5vw;
 }
-textarea {
+
+.myButton {
+	-moz-box-shadow:inset 0px 34px 0px -15px #b54b3a;
+	-webkit-box-shadow:inset 0px 34px 0px -15px #b54b3a;
+	box-shadow:inset 0px 34px 0px -15px #b54b3a;
+	background-color:#a73f2d;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	border:0.5px solid #241d13;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:9px 23px;
+	text-decoration:none;
+	text-shadow:0px -1px 0px #7a2a1d;
+  float: right;
+  margin: 15px;
+}
+.myButton:hover {
+	background-color:#b34332;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+#editor {
+    position: absolute;
+    width: 500px;
+    height: 400px;
+
+}
+
+#code {
   display: block;
+  font-size: 1em;
   margin: 0 auto;
-  width: 750px;
-  height: 300px;
+  width: 60vw;
+  height: 350px;
   margin-bottom: 1em;
+  color:#AAAAAA;
+  background-color: #15211E;
 }
 iframe { display: none; }
